@@ -1,0 +1,68 @@
+// ====== GOOGLE APPS SCRIPT — Scoptus API ======
+const SHEET_ID = 'SPREADSHEET_ID_KAMU'; // Ganti dengan ID spreadsheet
+
+function doGet(e) {
+  return ContentService.createTextOutput(JSON.stringify({status: 'ok'}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  try {
+    const sheet = SpreadsheetApp.openById(SHEET_ID).getActiveSheet();
+    const data = JSON.parse(e.postData.contents);
+    
+    if (data.action === 'insert') {
+      const id = new Date().getTime();
+      // Urutan kolom: id, kategori, title, deskripsi, link, gambar, created_at
+      sheet.appendRow([
+        id,
+        data.kategori || '',
+        data.title || '',
+        data.deskripsi || '',
+        data.link || '',
+        data.gambar || '',
+        new Date().toISOString()
+      ]);
+      return ContentService.createTextOutput(JSON.stringify({status: 'success', action: 'insert', id: id}))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    if (data.action === 'update') {
+      const allData = sheet.getDataRange().getValues();
+      for (let i = 1; i < allData.length; i++) {
+        if (String(allData[i][0]) === String(data.id)) {
+          // Update kolom B sampai F (kategori, title, deskripsi, link, gambar)
+          sheet.getRange(i + 1, 2, 1, 5).setValues([[
+            data.kategori || '',
+            data.title || '',
+            data.deskripsi || '',
+            data.link || '',
+            data.gambar || ''
+          ]]);
+          break;
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({status: 'success', action: 'update'}))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    if (data.action === 'delete') {
+      const allData = sheet.getDataRange().getValues();
+      for (let i = 1; i < allData.length; i++) {
+        if (String(allData[i][0]) === String(data.id)) {
+          sheet.deleteRow(i + 1);
+          break;
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({status: 'success', action: 'delete'}))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({status: 'error', message: 'Unknown action'}))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({status: 'error', message: error.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}

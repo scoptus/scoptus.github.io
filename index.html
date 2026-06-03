@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scoptus — Belanja Mudah, Harga Bersahabat</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --navy: #0d1b3e;
+            --navy-light: #1a2f5a;
+            --tosca: #00b4d8;
+            --tosca-light: #48cae4;
+            --tosca-dark: #0096b7;
+            --white: #ffffff;
+            --gray-light: #f8f9fa;
+            --gray: #6c757d;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 8px 30px rgba(0, 180, 216, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gray-light);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: var(--navy);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .navbar .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .navbar .logo img { height: 40px; }
+        .navbar .logo span {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--tosca);
+        }
+        .navbar .nav-links { display: flex; gap: 20px; align-items: center; }
+        .navbar .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+        .navbar .nav-links a:hover { color: var(--tosca); }
+        .navbar .nav-links .btn-admin {
+            background: var(--tosca);
+            color: var(--navy);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .navbar .nav-links .btn-admin:hover {
+            background: var(--tosca-light);
+        }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 50%, var(--tosca-dark) 100%);
+            color: var(--white);
+            text-align: center;
+            padding: 80px 5% 100px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0,180,216,0.1) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .hero h1 span { color: var(--tosca); }
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+        .hero .btn-hero {
+            display: inline-block;
+            background: var(--tosca);
+            color: var(--navy);
+            padding: 14px 35px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .hero .btn-hero:hover {
+            background: var(--tosca-light);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,180,216,0.4);
+        }
+
+        /* STATS */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 50px;
+            position: relative;
+        }
+        .stats .stat-item { text-align: center; }
+        .stats .stat-item .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--tosca);
+        }
+        .stats .stat-item .label { font-size: 0.9rem; opacity: 0.8; }
+
+        /* CATEGORIES */
+        .section-title {
+            text-align: center;
+            padding: 60px 5% 30px;
+        }
+        .section-title h2 {
+            font-size: 2rem;
+            color: var(--navy);
+        }
+        .section-title h2 span { color: var(--tosca); }
+        .section-title p { color: var(--gray); margin-top: 10px; }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            padding: 0 5% 80px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .category-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 35px 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--tosca);
+        }
+        .category-card .icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--tosca), var(--tosca-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.8rem;
+            color: var(--white);
+        }
+        .category-card h3 {
+            font-size: 1.1rem;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+        .category-card .count {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--navy);
+            color: var(--white);
+            text-align: center;
+            padding: 30px 5%;
+        }
+        footer p { opacity: 0.7; font-size: 0.9rem; }
+
+        /* LOADING */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+        .loading i { font-size: 2rem; color: var(--tosca); animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1rem; }
+            .stats { gap: 25px; }
+            .stats .stat-item .number { font-size: 1.5rem; }
+            .navbar .nav-links a:not(.btn-admin) { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="index.html" class="logo">
+        <img src="logo.png" alt="Scoptus Logo">
+        <span>Scoptus</span>
+    </a>
+    <div class="nav-links">
+        <a href="#categories">Kategori</a>
+        <a href="admin.html" class="btn-admin"><i class="fas fa-lock"></i> Admin</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <h1>Belanja di <span>Scoptus</span><br>Mudah & Hemat</h1>
+    <p>Temukan berbagai produk berkualitas mulai dari Home Decor, Gadget, Fashion, Elektronik, hingga Kebutuhan Harian.</p>
+    <a href="#categories" class="btn-hero"><i class="fas fa-shopping-bag"></i> Lihat Produk</a>
+    <div class="stats">
+        <div class="stat-item">
+            <div class="number" id="totalProducts">-</div>
+            <div class="label">Produk</div>
+        </div>
+        <div class="stat-item">
+            <div class="number">5</div>
+            <div class="label">Kategori</div>
+        </div>
+        <div class="stat-item">
+            <div class="number">⭐ 4.9</div>
+            <div class="label">Rating</div>
+        </div>
+    </div>
+</section>
+
+<!-- CATEGORIES -->
+<section id="categories">
+    <div class="section-title">
+        <h2>Kategori <span>Produk</span></h2>
+        <p>Pilih kategori favoritmu dan mulai belanja</p>
+    </div>
+    <div class="categories-grid" id="categoriesGrid">
+        <div class="loading"><i class="fas fa-spinner"></i><p>Memuat data...</p></div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <p>&copy; 2026 Scoptus. All rights reserved.</p>
+</footer>
+
+<script>
+    // ====== KONFIGURASI ======
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKiqz17i6JMHkQaODY2tdLDQeiZEhhbxFA1a7H-xp-Gz3m8MOim4LU9LJy8kf_G-t9s8o4Q8oN0IQV/pub?gid=0&single=true&output=csv';
+
+    const CATEGORIES = [
+        { name: 'Home Decor', icon: 'fa-home' },
+        { name: 'Gadget & Daily Essentials', icon: 'fa-mobile-screen' },
+        { name: 'Fashion', icon: 'fa-shirt' },
+        { name: 'Electronic & Parts', icon: 'fa-microchip' },
+        { name: 'Grocery', icon: 'fa-basket-shopping' }
+    ];
+
+    // ====== LOAD DATA ======
+    async function loadData() {
+        try {
+            const response = await fetch(CSV_URL);
+            const csvText = await response.text();
+            const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+            const products = parsed.data;
+
+            document.getElementById('totalProducts').textContent = products.length;
+
+            const grid = document.getElementById('categoriesGrid');
+            grid.innerHTML = '';
+
+            CATEGORIES.forEach(cat => {
+                const count = products.filter(p => 
+                    p.kategori && p.kategori.trim().toLowerCase() === cat.name.toLowerCase()
+                ).length;
+
+                grid.innerHTML += `
+                    <a href="category.html?cat=${encodeURIComponent(cat.name)}" class="category-card">
+                        <div class="icon"><i class="fas ${cat.icon}"></i></div>
+                        <h3>${cat.name}</h3>
+                        <div class="count">${count} produk</div>
+                    </a>
+                `;
+            });
+        } catch (error) {
+            console.error('Error loading data:', error);
+            document.getElementById('categoriesGrid').innerHTML = '<p style="text-align:center;color:red;">Gagal memuat data. Periksa koneksi atau URL CSV.</p>';
+        }
+    }
+
+    loadData();
+</script>
+
+</body>
+</html>
