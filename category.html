@@ -17,30 +17,40 @@
             --white: #ffffff;
             --gray-light: #f8f9fa;
             --gray: #6c757d;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            --shadow-hover: 0 8px 30px rgba(0, 180, 216, 0.2);
+            --shopee: #ee4d2d;
+            --shopee-light: #ff6633;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        html { scroll-behavior: smooth; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background: var(--gray-light);
             color: #333;
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
-        /* NAVBAR */
+        /* NAVBAR GLASSMORPHISM */
         .navbar {
-            background: var(--navy);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             padding: 15px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: sticky;
+            position: fixed;
             top: 0;
+            width: 100%;
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+        .navbar.scrolled {
+            padding: 10px 5%;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.1);
         }
         .navbar .logo {
             display: flex;
@@ -52,79 +62,137 @@
         .navbar .logo span {
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--tosca);
+            color: var(--navy);
         }
         .navbar .nav-links { display: flex; gap: 20px; align-items: center; }
         .navbar .nav-links a {
-            color: var(--white);
+            color: var(--navy);
             text-decoration: none;
             font-size: 0.95rem;
+            font-weight: 500;
             transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .navbar .nav-links a:hover { color: var(--tosca); }
         .navbar .nav-links .btn-admin {
             background: var(--tosca);
-            color: var(--navy);
-            padding: 8px 16px;
-            border-radius: 20px;
+            color: var(--white);
+            padding: 8px 20px;
+            border-radius: 25px;
             font-weight: 600;
+        }
+        .navbar .nav-links .btn-admin:hover { background: var(--tosca-dark); }
+
+        /* HERO SECTION dengan PARALLAX */
+        .hero {
+            position: relative;
+            min-height: 50vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 50%, var(--tosca-dark) 100%);
+            color: var(--white);
+            padding: 140px 5% 80px;
+            overflow: hidden;
+        }
+        
+        /* Parallax Shapes */
+        .parallax-shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            animation: morphing 15s infinite ease-in-out;
+        }
+        .shape-1 { width: 300px; height: 300px; top: 10%; left: 5%; animation-delay: 0s; }
+        .shape-2 { width: 250px; height: 250px; bottom: 10%; right: 10%; animation-delay: -5s; }
+        .shape-3 { width: 150px; height: 150px; top: 40%; left: 40%; animation-delay: -2s; }
+
+        @keyframes morphing {
+            0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; transform: rotate(0deg); }
+            50% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; transform: rotate(180deg); }
+        }
+
+        .hero-content { position: relative; z-index: 2; }
+        
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            line-height: 1.2;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            animation: fadeInUp 0.8s ease-out;
+        }
+        .hero h1 i { color: var(--tosca-light); margin-right: 15px; }
+        
+        .hero p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
         }
 
         /* BREADCRUMB */
         .breadcrumb {
-            padding: 20px 5%;
+            padding: 15px 5%;
             max-width: 1200px;
             margin: 0 auto;
+            font-size: 0.9rem;
+            color: var(--gray);
         }
-        .breadcrumb a {
-            color: var(--tosca-dark);
-            text-decoration: none;
-        }
+        .breadcrumb a { color: var(--tosca-dark); text-decoration: none; font-weight: 500; }
         .breadcrumb a:hover { text-decoration: underline; }
-        .breadcrumb span { color: var(--gray); margin: 0 8px; }
-
-        /* PAGE HEADER */
-        .page-header {
-            background: linear-gradient(135deg, var(--navy), var(--navy-light));
-            color: var(--white);
-            padding: 50px 5%;
-            text-align: center;
-        }
-        .page-header h1 { font-size: 2.2rem; margin-bottom: 10px; }
-        .page-header h1 i { color: var(--tosca); margin-right: 10px; }
-        .page-header p { opacity: 0.8; }
+        .breadcrumb span { margin: 0 8px; }
 
         /* PRODUCT GRID */
         .products-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 5%;
+            padding: 20px 5% 80px;
         }
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 30px;
+            perspective: 1000px;
         }
+
+        /* 3D PRODUCT CARD */
         .product-card {
             background: var(--white);
-            border-radius: 16px;
+            border-radius: 24px;
             overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: all 0.3s;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            transform-style: preserve-3d;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
         }
         .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-hover);
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 20px 60px rgba(0, 180, 216, 0.15);
+        }
+
+        .product-img-wrapper {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+            background: #f0f2f5;
         }
         .product-card .product-img {
             width: 100%;
-            height: 200px;
+            height: 100%;
             object-fit: cover;
-            background: #eee;
+            transition: transform 0.5s;
         }
-        .product-card .product-img-placeholder {
+        .product-card:hover .product-img {
+            transform: scale(1.1);
+        }
+        
+        .product-img-placeholder {
             width: 100%;
-            height: 200px;
+            height: 100%;
             background: linear-gradient(135deg, #e0e0e0, #f5f5f5);
             display: flex;
             align-items: center;
@@ -132,76 +200,106 @@
             color: var(--gray);
             font-size: 3rem;
         }
-        .product-card .product-info {
-            padding: 20px;
-        }
-        .product-card .product-info h3 {
-            font-size: 1rem;
+
+        .product-info { padding: 25px; }
+        
+        .product-info h3 {
+            font-size: 1.1rem;
             color: var(--navy);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
+            font-weight: 700;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-        .product-card .product-info .description {
-            font-size: 0.85rem;
+        
+        .product-info .description {
+            font-size: 0.9rem;
             color: var(--gray);
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             display: -webkit-box;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            line-height: 1.5;
         }
-        .product-card .btn-shopee {
-            display: block;
+
+        .btn-shopee {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             width: 100%;
-            background: linear-gradient(135deg, #ee4d2d, #ff6633);
+            background: linear-gradient(135deg, var(--shopee), var(--shopee-light));
             color: var(--white);
-            text-align: center;
             padding: 12px;
             text-decoration: none;
             font-weight: 600;
-            border-radius: 8px;
+            border-radius: 15px;
             transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(238, 77, 45, 0.3);
         }
-        .product-card .btn-shopee:hover {
-            background: linear-gradient(135deg, #d44324, #ee4d2d);
-            transform: scale(1.02);
+        .btn-shopee:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(238, 77, 45, 0.4);
         }
 
-        /* EMPTY STATE */
+        /* EMPTY STATE & LOADING */
         .empty-state {
             text-align: center;
             padding: 80px 20px;
-            color: var(--gray);
+            background: var(--white);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            grid-column: 1 / -1;
         }
-        .empty-state i { font-size: 4rem; color: #ddd; margin-bottom: 20px; }
+        .empty-state i { font-size: 4rem; color: #eee; margin-bottom: 20px; }
         .empty-state h3 { color: var(--navy); margin-bottom: 10px; }
 
-        /* LOADING */
         .loading {
             text-align: center;
             padding: 80px;
             color: var(--gray);
+            grid-column: 1 / -1;
         }
-        .loading i { font-size: 2.5rem; color: var(--tosca); animation: spin 1s linear infinite; }
+        .loading i { 
+            font-size: 3rem; color: var(--tosca); 
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px; 
+            display: block;
+        }
         @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         /* FOOTER */
         footer {
             background: var(--navy);
             color: var(--white);
             text-align: center;
-            padding: 30px 5%;
-            margin-top: 60px;
+            padding: 40px 5%;
+            position: relative;
+        }
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--tosca), var(--tosca-light));
         }
         footer p { opacity: 0.7; font-size: 0.9rem; }
 
+        /* RESPONSIVE */
         @media (max-width: 768px) {
-            .page-header h1 { font-size: 1.6rem; }
-            .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-            .product-card .product-img, .product-card .product-img-placeholder { height: 150px; }
+            .hero h1 { font-size: 1.8rem; }
+            .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+            .product-img-wrapper { height: 160px; }
+            .product-info { padding: 15px; }
             .navbar .nav-links a:not(.btn-admin) { display: none; }
         }
     </style>
@@ -209,7 +307,7 @@
 <body>
 
 <!-- NAVBAR -->
-<nav class="navbar">
+<nav class="navbar" id="navbar">
     <a href="index.html" class="logo">
         <img src="logo.png" alt="Scoptus Logo">
         <span>Scoptus</span>
@@ -220,15 +318,21 @@
     </div>
 </nav>
 
-<!-- PAGE HEADER -->
-<section class="page-header">
-    <h1><i class="fas fa-tag"></i> <span id="categoryTitle">Memuat...</span></h1>
-    <p id="categoryDesc">Menampilkan semua produk dalam kategori ini</p>
+<!-- HERO HEADER -->
+<section class="hero">
+    <div class="parallax-shape shape-1"></div>
+    <div class="parallax-shape shape-2"></div>
+    <div class="parallax-shape shape-3"></div>
+    
+    <div class="hero-content">
+        <h1><i class="fas fa-tag"></i> <span id="categoryTitle">Memuat...</span></h1>
+        <p id="categoryDesc">Menampilkan semua produk dalam kategori ini</p>
+    </div>
 </section>
 
 <!-- BREADCRUMB -->
 <div class="breadcrumb">
-    <a href="index.html">Home</a>
+    <a href="index.html"><i class="fas fa-home"></i> Home</a>
     <span>›</span>
     <span id="breadcrumbCat">Kategori</span>
 </div>
@@ -247,6 +351,25 @@
 </footer>
 
 <script>
+    // ====== PARALLAX SCROLL EFFECT ======
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const parallaxElements = document.querySelectorAll('.parallax-shape');
+        
+        parallaxElements.forEach((el, index) => {
+            const speed = 0.3 + (index * 0.1);
+            el.style.transform = `translateY(${scrolled * speed}px) rotate(${scrolled * 0.2}deg)`;
+        });
+        
+        // Navbar shrink effect
+        const navbar = document.getElementById('navbar');
+        if (scrolled > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
     // ====== KONFIGURASI ======
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKiqz17i6JMHkQaODY2tdLDQeiZEhhbxFA1a7H-xp-Gz3m8MOim4LU9LJy8kf_G-t9s8o4Q8oN0IQV/pub?gid=0&single=true&output=csv';
 
@@ -265,9 +388,11 @@
     // ====== SET PAGE TITLE ======
     if (category) {
         const icon = CATEGORY_ICONS[category] || 'fa-box';
-        document.getElementById('categoryTitle').innerHTML = `<i class="fas ${icon}"></i> ${category}`;
+        document.getElementById('categoryTitle').innerHTML = `${category}`;
+        document.getElementById('categoryTitle').insertAdjacentHTML('afterbegin', `<i class="fas ${icon}"></i> `);
         document.getElementById('breadcrumbCat').textContent = category;
         document.title = `${category} — Scoptus`;
+        document.getElementById('categoryDesc').textContent = `Jelajahi produk terbaik di kategori ${category}`;
     } else {
         document.getElementById('categoryTitle').textContent = 'Semua Produk';
     }
@@ -290,6 +415,7 @@
             }
 
             if (products.length === 0) {
+                area.className = '';
                 area.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-box-open"></i>
@@ -303,7 +429,7 @@
             area.className = 'products-grid';
             area.innerHTML = '';
 
-            products.forEach(product => {
+            products.forEach((product, index) => {
                 const imgHtml = product.gambar 
                     ? `<img src="${product.gambar}" alt="${product.title}" class="product-img" onerror="this.outerHTML='<div class=\\'product-img-placeholder\\'><i class=\\'fas fa-image\\'></i></div>'">`
                     : `<div class="product-img-placeholder"><i class="fas fa-image"></i></div>`;
@@ -311,22 +437,28 @@
                 const shopeeLink = product.link || '#';
                 const desc = product.deskripsi || '';
 
-                area.innerHTML += `
-                    <div class="product-card">
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.style.animationDelay = `${index * 0.1}s`; // Staggered animation
+                
+                card.innerHTML = `
+                    <div class="product-img-wrapper">
                         ${imgHtml}
-                        <div class="product-info">
-                            <h3>${product.title || 'Tanpa Nama'}</h3>
-                            ${desc ? `<p class="description">${desc}</p>` : ''}
-                            <a href="${shopeeLink}" target="_blank" class="btn-shopee">
-                                <i class="fas fa-shopping-cart"></i> Beli di Shopee
-                            </a>
-                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3>${product.title || 'Tanpa Nama'}</h3>
+                        ${desc ? `<p class="description">${desc}</p>` : ''}
+                        <a href="${shopeeLink}" target="_blank" class="btn-shopee">
+                            <i class="fas fa-shopping-cart"></i> Beli di Shopee
+                        </a>
                     </div>
                 `;
+                area.appendChild(card);
             });
         } catch (error) {
             console.error('Error:', error);
-            area.innerHTML = '<p style="text-align:center;color:red;padding:40px;">Gagal memuat produk. Periksa koneksi internet.</p>';
+            area.className = '';
+            area.innerHTML = '<div class="empty-state" style="color:red;">Gagal memuat produk. Periksa koneksi internet.</div>';
         }
     }
 
