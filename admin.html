@@ -20,26 +20,60 @@
             --danger: #dc3545;
             --success: #28a745;
             --warning: #ffc107;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        html { scroll-behavior: smooth; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background: var(--gray-light);
             color: #333;
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
-        /* NAVBAR */
+        /* === PARALLAX & ANIMATION GLOBAL === */
+        .parallax-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 50%, var(--tosca-dark) 100%);
+            z-index: -2;
+        }
+        .parallax-shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            animation: morphing 15s infinite ease-in-out;
+            z-index: -1;
+        }
+        .shape-1 { width: 400px; height: 400px; top: -100px; left: -100px; animation-delay: 0s; }
+        .shape-2 { width: 300px; height: 300px; bottom: 10%; right: -50px; animation-delay: -5s; }
+        .shape-3 { width: 200px; height: 200px; top: 40%; left: 40%; animation-delay: -2s; }
+
+        @keyframes morphing {
+            0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; transform: rotate(0deg); }
+            50% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; transform: rotate(180deg); }
+        }
+
+        /* === NAVBAR === */
         .navbar {
-            background: var(--navy);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             padding: 15px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s;
         }
         .navbar .logo {
             display: flex;
@@ -48,40 +82,41 @@
             text-decoration: none;
         }
         .navbar .logo img { height: 40px; }
-        .navbar .logo span {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--tosca);
-        }
+        .navbar .logo span { font-size: 1.5rem; font-weight: 700; color: var(--navy); }
         .navbar .nav-links a {
-            color: var(--white);
+            color: var(--navy);
             text-decoration: none;
             margin-left: 20px;
-            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.3s;
         }
         .navbar .nav-links a:hover { color: var(--tosca); }
 
-        /* LOGIN SCREEN */
+        /* === LOGIN SCREEN === */
         .login-screen {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, var(--navy), var(--navy-light));
+            position: relative;
         }
         .login-box {
-            background: var(--white);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 50px 40px;
-            border-radius: 20px;
+            border-radius: 30px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             text-align: center;
             max-width: 400px;
             width: 90%;
+            color: var(--white);
+            animation: fadeInUp 0.8s ease-out;
         }
         .login-box .logo-icon {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, var(--tosca), var(--tosca-dark));
+            background: linear-gradient(135deg, var(--tosca), var(--tosca-light));
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -89,134 +124,162 @@
             margin: 0 auto 20px;
             font-size: 2rem;
             color: var(--white);
+            box-shadow: 0 8px 25px rgba(0,180,216,0.4);
         }
-        .login-box h2 { color: var(--navy); margin-bottom: 10px; }
-        .login-box p { color: var(--gray); margin-bottom: 30px; font-size: 0.9rem; }
+        .login-box h2 { color: var(--white); margin-bottom: 10px; }
+        .login-box p { color: rgba(255,255,255,0.8); margin-bottom: 30px; font-size: 0.9rem; }
         .login-box input {
             width: 100%;
             padding: 14px 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
             font-size: 1rem;
             margin-bottom: 15px;
-            transition: border-color 0.3s;
+            color: var(--white);
+            transition: all 0.3s;
         }
+        .login-box input::placeholder { color: rgba(255,255,255,0.5); }
         .login-box input:focus {
             outline: none;
-            border-color: var(--tosca);
+            border-color: var(--tosca-light);
+            background: rgba(255,255,255,0.15);
         }
         .login-box .btn-login {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, var(--tosca), var(--tosca-dark));
+            background: linear-gradient(135deg, var(--tosca), var(--tosca-light));
             color: var(--white);
             border: none;
-            border-radius: 10px;
+            border-radius: 15px;
             font-size: 1.05rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,180,216,0.3);
         }
         .login-box .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0,180,216,0.4);
+            box-shadow: 0 8px 25px rgba(0,180,216,0.5);
         }
         .login-box .error-msg {
-            color: var(--danger);
+            color: #ff6b6b;
             font-size: 0.85rem;
             margin-top: 10px;
             display: none;
         }
 
-        /* ADMIN PANEL */
-        .admin-panel { display: none; padding: 30px 5%; max-width: 1200px; margin: 0 auto; }
+        /* === ADMIN PANEL CONTENT === */
+        .admin-wrapper {
+            padding-top: 80px;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+        .admin-panel {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 5%;
+            display: none;
+        }
 
-        .admin-header {
+        /* HERO HEADER (Small) */
+        .admin-hero {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            color: var(--white);
             flex-wrap: wrap;
             gap: 15px;
+            animation: fadeInUp 0.6s ease-out;
         }
-        .admin-header h1 { color: var(--navy); font-size: 1.8rem; }
-        .admin-header h1 i { color: var(--tosca); }
+        .admin-hero h1 { font-size: 1.8rem; margin: 0; }
+        .admin-hero h1 i { color: var(--tosca-light); margin-right: 10px; }
         .btn-logout {
-            background: var(--danger);
+            background: rgba(220, 53, 69, 0.2);
             color: var(--white);
             padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s;
         }
-        .btn-logout:hover { background: #c82333; }
+        .btn-logout:hover { background: var(--danger); border-color: var(--danger); }
 
-        /* FORM */
-        .form-section {
+        /* CARDS */
+        .glass-card {
             background: var(--white);
             padding: 30px;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
             margin-bottom: 30px;
+            animation: fadeInUp 0.6s ease-out;
         }
-        .form-section h2 {
+        .glass-card h2 {
             color: var(--navy);
             margin-bottom: 20px;
             font-size: 1.3rem;
         }
-        .form-section h2 i { color: var(--tosca); margin-right: 8px; }
-        .form-group { margin-bottom: 15px; }
+        .glass-card h2 i { color: var(--tosca); margin-right: 8px; }
+
+        /* FORM */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .form-group { margin-bottom: 5px; }
+        .form-group.full-width { grid-column: 1 / -1; }
         .form-group label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             font-weight: 600;
             color: var(--navy);
             font-size: 0.9rem;
         }
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 0.95rem;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
             font-family: inherit;
         }
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
             border-color: var(--tosca);
+            box-shadow: 0 0 0 3px rgba(0,180,216,0.1);
         }
         .form-group textarea { resize: vertical; min-height: 80px; }
 
-        .form-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
+        .form-actions { display: flex; gap: 10px; margin-top: 15px; grid-column: 1 / -1; }
         .btn-submit {
             padding: 12px 30px;
             background: linear-gradient(135deg, var(--tosca), var(--tosca-dark));
             color: var(--white);
             border: none;
-            border-radius: 8px;
-            font-weight: 600;
+            border-radius: 12px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s;
             font-size: 1rem;
         }
         .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,180,216,0.3); }
+        
         .btn-cancel {
             padding: 12px 30px;
             background: #e0e0e0;
             color: #333;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
             display: none;
@@ -224,91 +287,56 @@
         }
         .btn-cancel:hover { background: #ccc; }
 
-        /* PRODUCT LIST */
-        .list-section {
-            background: var(--white);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
-        }
-        .list-section h2 {
-            color: var(--navy);
-            margin-bottom: 20px;
-            font-size: 1.3rem;
-        }
-        .list-section h2 i { color: var(--tosca); margin-right: 8px; }
-
-        .product-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
+        /* TABLE */
+        .product-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
         .product-table thead { background: var(--navy); color: var(--white); }
-        .product-table th, .product-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
+        .product-table th, .product-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
         .product-table th { font-weight: 600; }
-        .product-table tbody tr:hover { background: #f8f9fa; }
-        .product-table .product-thumb {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
+        .product-table tbody tr:hover { background: var(--gray-light); transition: background 0.3s; }
+        .product-table .product-thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 10px; background: #eee; }
         .product-table .actions { display: flex; gap: 8px; }
-        .product-table .btn-edit {
-            background: var(--warning);
-            color: #333;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
+        .product-table .btn-action {
+            border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem;
+            transition: all 0.2s;
         }
-        .product-table .btn-delete {
-            background: var(--danger);
-            color: var(--white);
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        .product-table .btn-edit:hover { background: #e0a800; }
-        .product-table .btn-delete:hover { background: #c82333; }
+        .btn-edit { background: var(--warning); color: #333; }
+        .btn-edit:hover { background: #e0a800; }
+        .btn-delete { background: var(--danger); color: var(--white); }
+        .btn-delete:hover { background: #c82333; }
 
         /* TOAST */
         .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            border-radius: 10px;
-            color: var(--white);
-            font-weight: 600;
-            z-index: 9999;
-            transform: translateX(120%);
-            transition: transform 0.3s;
+            position: fixed; top: 90px; right: 20px; padding: 15px 25px;
+            border-radius: 12px; color: var(--white); font-weight: 600; z-index: 9999;
+            transform: translateX(120%); transition: transform 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         .toast.show { transform: translateX(0); }
         .toast.success { background: var(--success); }
         .toast.error { background: var(--danger); }
 
+        /* ANIMATIONS */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* RESPONSIVE */
         @media (max-width: 768px) {
-            .product-table { font-size: 0.8rem; }
-            .product-table th:nth-child(3), .product-table td:nth-child(3) { display: none; }
+            .form-grid { grid-template-columns: 1fr; }
+            .admin-hero { flex-direction: column; text-align: center; }
         }
     </style>
 </head>
 <body>
 
+<!-- PARALLAX BACKGROUND (Global) -->
+<div class="parallax-bg"></div>
+<div class="parallax-shape shape-1"></div>
+<div class="parallax-shape shape-2"></div>
+<div class="parallax-shape shape-3"></div>
+
 <!-- NAVBAR -->
-<nav class="navbar">
+<nav class="navbar" id="navbar">
     <a href="index.html" class="logo">
         <img src="logo.png" alt="Scoptus Logo">
         <span>Scoptus</span>
@@ -322,8 +350,8 @@
 <div class="login-screen" id="loginScreen">
     <div class="login-box">
         <div class="logo-icon"><i class="fas fa-lock"></i></div>
-        <h2>Admin Panel</h2>
-        <p>Masukkan password untuk mengakses panel admin Scoptus</p>
+        <h2>Admin Access</h2>
+        <p>Masukkan password untuk mengelola produk Scoptus</p>
         <input type="password" id="passwordInput" placeholder="Password..." onkeypress="if(event.key==='Enter')login()">
         <button class="btn-login" onclick="login()"><i class="fas fa-sign-in-alt"></i> Masuk</button>
         <p class="error-msg" id="errorMsg">Password salah! Coba lagi.</p>
@@ -331,69 +359,74 @@
 </div>
 
 <!-- ADMIN PANEL -->
-<div class="admin-panel" id="adminPanel">
-    <div class="admin-header">
-        <h1><i class="fas fa-cog"></i> Panel Admin</h1>
-        <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
-    </div>
+<div class="admin-wrapper" id="adminWrapper" style="display:none;">
+    <div class="admin-panel" id="adminPanel">
+        <!-- Hero Header -->
+        <div class="admin-hero">
+            <h1><i class="fas fa-cog"></i> Panel Admin</h1>
+            <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
 
-    <!-- FORM -->
-    <div class="form-section">
-        <h2 id="formTitle"><i class="fas fa-plus-circle"></i> Tambah Produk Baru</h2>
-        <div class="form-group">
-            <label>Judul Produk *</label>
-            <input type="text" id="productTitle" placeholder="Contoh: Lampu Hias LED Minimalis">
+        <!-- FORM -->
+        <div class="glass-card">
+            <h2 id="formTitle"><i class="fas fa-plus-circle"></i> Tambah Produk Baru</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Judul Produk *</label>
+                    <input type="text" id="productTitle" placeholder="Contoh: Lampu Hias LED">
+                </div>
+                <div class="form-group">
+                    <label>Kategori *</label>
+                    <select id="productCategory">
+                        <option value="">— Pilih Kategori —</option>
+                        <option value="Home Decor">Home Decor</option>
+                        <option value="Gadget & Daily Essentials">Gadget & Daily Essentials</option>
+                        <option value="Fashion">Fashion</option>
+                        <option value="Electronic & Parts">Electronic & Parts</option>
+                        <option value="Grocery">Grocery</option>
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <label>Link Shopee *</label>
+                    <input type="url" id="productLink" placeholder="https://shopee.co.id/...">
+                </div>
+                <div class="form-group full-width">
+                    <label>URL Gambar</label>
+                    <input type="url" id="productImage" placeholder="Link gambar (ImgBB/Drive)">
+                </div>
+                <div class="form-group full-width">
+                    <label>Deskripsi</label>
+                    <textarea id="productDesc" placeholder="Deskripsi singkat produk..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-submit" id="btnSubmit" onclick="submitProduct()">
+                        <i class="fas fa-save"></i> Simpan Produk
+                    </button>
+                    <button class="btn-cancel" id="btnCancel" onclick="cancelEdit()">
+                        <i class="fas fa-times"></i> Batal
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label>Kategori *</label>
-            <select id="productCategory">
-                <option value="">— Pilih Kategori —</option>
-                <option value="Home Decor">Home Decor</option>
-                <option value="Gadget & Daily Essentials">Gadget & Daily Essentials</option>
-                <option value="Fashion">Fashion</option>
-                <option value="Electronic & Parts">Electronic & Parts</option>
-                <option value="Grocery">Grocery</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Link Shopee *</label>
-            <input type="url" id="productLink" placeholder="https://shopee.co.id/...">
-        </div>
-        <div class="form-group">
-            <label>URL Gambar</label>
-            <input type="url" id="productImage" placeholder="https://...">
-        </div>
-        <div class="form-group">
-            <label>Deskripsi</label>
-            <textarea id="productDesc" placeholder="Deskripsi singkat produk..."></textarea>
-        </div>
-        <div class="form-actions">
-            <button class="btn-submit" id="btnSubmit" onclick="submitProduct()">
-                <i class="fas fa-save"></i> Simpan Produk
-            </button>
-            <button class="btn-cancel" id="btnCancel" onclick="cancelEdit()">
-                <i class="fas fa-times"></i> Batal
-            </button>
-        </div>
-    </div>
 
-    <!-- PRODUCT LIST -->
-    <div class="list-section">
-        <h2><i class="fas fa-list"></i> Daftar Produk (<span id="productCount">0</span>)</h2>
-        <div style="overflow-x:auto;">
-            <table class="product-table">
-                <thead>
-                    <tr>
-                        <th>Gambar</th>
-                        <th>Judul</th>
-                        <th>Kategori</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="productTableBody">
-                    <tr><td colspan="4" style="text-align:center;padding:30px;">Memuat data...</td></tr>
-                </tbody>
-            </table>
+        <!-- PRODUCT LIST -->
+        <div class="glass-card">
+            <h2><i class="fas fa-list"></i> Daftar Produk (<span id="productCount">0</span>)</h2>
+            <div style="overflow-x:auto;">
+                <table class="product-table">
+                    <thead>
+                        <tr>
+                            <th>Gambar</th>
+                            <th>Judul</th>
+                            <th>Kategori</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productTableBody">
+                        <tr><td colspan="4" style="text-align:center;padding:30px;">Memuat data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -402,26 +435,29 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    // ========================================================
-    // ⚠️ GANTI PASSWORD DI BAWAH INI SESUKA KAMU!
-    // ========================================================
-    const ADMIN_PASSWORD = 'Akamaru030786';
-    // ========================================================
-
-    // ====== KONFIGURASI ======
+    // === KONFIGURASI ===
+    const ADMIN_PASSWORD = 'scoptus2026'; // Ganti passwordmu di sini
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKiqz17i6JMHkQaODY2tdLDQeiZEhhbxFA1a7H-xp-Gz3m8MOim4LU9LJy8kf_G-t9s8o4Q8oN0IQV/pub?gid=0&single=true&output=csv';
-
-    // ⚠️ GANTI URL INI dengan URL Google Apps Script Web App kamu!
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSP6TVmrV7dn2fiQrg9mQeYvCwxjXeiNpYG7s05ckcxUO8st_-AB2FkiRbW3UbCCGl/exec';
+    const APPS_SCRIPT_URL = 'GANTI_DENGAN_URL_APPS_SCRIPT_KAMU';
 
     let editingId = null;
     let allProducts = [];
 
-    // ====== LOGIN ======
+    // === PARALLAX EFFECT ===
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const shapes = document.querySelectorAll('.parallax-shape');
+        shapes.forEach((el, i) => {
+            el.style.transform = `translateY(${scrolled * (0.2 + i*0.1)}px) rotate(${scrolled * 0.1}deg)`;
+        });
+    });
+
+    // === LOGIN SYSTEM ===
     function login() {
         const pwd = document.getElementById('passwordInput').value;
         if (pwd === ADMIN_PASSWORD) {
             document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminWrapper').style.display = 'block';
             document.getElementById('adminPanel').style.display = 'block';
             loadProducts();
         } else {
@@ -432,12 +468,13 @@
 
     function logout() {
         document.getElementById('adminPanel').style.display = 'none';
+        document.getElementById('adminWrapper').style.display = 'none';
         document.getElementById('loginScreen').style.display = 'flex';
         document.getElementById('passwordInput').value = '';
         document.getElementById('errorMsg').style.display = 'none';
     }
 
-    // ====== TOAST ======
+    // === TOAST NOTIFICATION ===
     function showToast(msg, type = 'success') {
         const toast = document.getElementById('toast');
         toast.textContent = msg;
@@ -445,7 +482,7 @@
         setTimeout(() => { toast.classList.remove('show'); }, 3000);
     }
 
-    // ====== LOAD PRODUCTS ======
+    // === CRUD LOGIC ===
     async function loadProducts() {
         try {
             const response = await fetch(CSV_URL);
@@ -456,14 +493,12 @@
             document.getElementById('productCount').textContent = allProducts.length;
             renderTable();
         } catch (error) {
-            console.error('Error loading:', error);
             showToast('Gagal memuat data!', 'error');
         }
     }
 
     function renderTable() {
         const tbody = document.getElementById('productTableBody');
-
         if (allProducts.length === 0) {
             tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:30px;color:#999;">Belum ada produk</td></tr>';
             return;
@@ -471,10 +506,8 @@
 
         tbody.innerHTML = '';
         allProducts.forEach((p, index) => {
-            const imgSrc = p.gambar || '';
-            const imgHtml = imgSrc 
-                ? `<img src="${imgSrc}" class="product-thumb" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 50 50%22><rect fill=%22%23eee%22 width=%2250%22 height=%2250%22/><text x=%2225%22 y=%2230%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2212%22>No img</text></svg>'">`
-                : `<div class="product-thumb" style="background:#eee;display:flex;align-items:center;justify-content:center;"><i class="fas fa-image" style="color:#ccc;"></i></div>`;
+            const img = p.gambar || '';
+            const imgHtml = img ? `<img src="${img}" class="product-thumb" onerror="this.style.display='none'">` : `<div class="product-thumb" style="display:flex;align-items:center;justify-content:center;"><i class="fas fa-image" style="color:#ccc"></i></div>`;
 
             tbody.innerHTML += `
                 <tr>
@@ -482,15 +515,14 @@
                     <td><strong>${p.title || '-'}</strong></td>
                     <td>${p.kategori || '-'}</td>
                     <td class="actions">
-                        <button class="btn-edit" onclick="editProduct(${index})"><i class="fas fa-edit"></i> Edit</button>
-                        <button class="btn-delete" onclick="deleteProduct(${index})"><i class="fas fa-trash"></i> Hapus</button>
+                        <button class="btn-action btn-edit" onclick="editProduct(${index})"><i class="fas fa-edit"></i></button>
+                        <button class="btn-action btn-delete" onclick="deleteProduct(${index})"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
             `;
         });
     }
 
-    // ====== SUBMIT PRODUCT ======
     async function submitProduct() {
         const title = document.getElementById('productTitle').value.trim();
         const kategori = document.getElementById('productCategory').value;
@@ -499,38 +531,32 @@
         const deskripsi = document.getElementById('productDesc').value.trim();
 
         if (!title || !kategori || !link) {
-            showToast('Lengkapi field yang wajib (*) !', 'error');
+            showToast('Lengkapi field yang wajib (*)!', 'error');
             return;
         }
 
         const data = {
             action: editingId !== null ? 'update' : 'insert',
             id: editingId !== null ? allProducts[editingId].id || editingId : '',
-            title,
-            kategori,
-            link,
-            gambar,
-            deskripsi
+            title, kategori, link, gambar, deskripsi
         };
 
         try {
-            const response = await fetch(APPS_SCRIPT_URL, {
+            await fetch(APPS_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
 
-            showToast(editingId !== null ? '✅ Produk berhasil diupdate! Refresh halaman untuk lihat perubahan.' : '✅ Produk berhasil ditambahkan! Refresh halaman untuk lihat perubahan.');
+            showToast(editingId !== null ? '✅ Produk diupdate!' : '✅ Produk ditambahkan!');
             clearForm();
-            setTimeout(() => loadProducts(), 2000);
+            setTimeout(() => loadProducts(), 1500);
         } catch (error) {
-            console.error('Error:', error);
-            showToast('Gagal menyimpan. Periksa URL Apps Script!', 'error');
+            showToast('Gagal menyimpan.', 'error');
         }
     }
 
-    // ====== EDIT PRODUCT ======
     function editProduct(index) {
         const p = allProducts[index];
         editingId = index;
@@ -542,9 +568,8 @@
         document.getElementById('productDesc').value = p.deskripsi || '';
 
         document.getElementById('formTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Produk';
-        document.getElementById('btnSubmit').innerHTML = '<i class="fas fa-save"></i> Update Produk';
+        document.getElementById('btnSubmit').innerHTML = '<i class="fas fa-save"></i> Update';
         document.getElementById('btnCancel').style.display = 'inline-block';
-
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -560,19 +585,15 @@
         document.getElementById('productImage').value = '';
         document.getElementById('productDesc').value = '';
         document.getElementById('formTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Tambah Produk Baru';
-        document.getElementById('btnSubmit').innerHTML = '<i class="fas fa-save"></i> Simpan Produk';
+        document.getElementById('btnSubmit').innerHTML = '<i class="fas fa-save"></i> Simpan';
         document.getElementById('btnCancel').style.display = 'none';
     }
 
-    // ====== DELETE PRODUCT ======
     async function deleteProduct(index) {
         const p = allProducts[index];
         if (!confirm(`Hapus produk "${p.title}"?`)) return;
 
-        const data = {
-            action: 'delete',
-            id: p.id || index
-        };
+        const data = { action: 'delete', id: p.id || index };
 
         try {
             await fetch(APPS_SCRIPT_URL, {
@@ -581,9 +602,8 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
-
-            showToast('🗑️ Produk berhasil dihapus!');
-            setTimeout(() => loadProducts(), 2000);
+            showToast('️ Produk dihapus!');
+            setTimeout(() => loadProducts(), 1500);
         } catch (error) {
             showToast('Gagal menghapus!', 'error');
         }
