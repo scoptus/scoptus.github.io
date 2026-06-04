@@ -314,8 +314,68 @@
         .toast.success { background: var(--success); }
         .toast.error { background: var(--danger); }
 
-        /* ANIMATIONS */
-        @keyframes fadeInUp {
+        /* IMAGE UPLOAD GRID */
+        .img-upload-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .img-slot {
+            aspect-ratio: 1;
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            background: #fafafa;
+        }
+        .img-slot:hover { border-color: var(--tosca); background: rgba(0,180,216,0.05); }
+        .img-slot.has-image { border-style: solid; border-color: var(--tosca); }
+        .img-slot .slot-preview {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            position: absolute; top: 0; left: 0;
+        }
+        .img-slot .slot-label {
+            font-size: 0.7rem; color: var(--gray); text-align: center;
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+        }
+        .img-slot .slot-label i { font-size: 1.4rem; color: #ccc; }
+        .img-slot .slot-label.main-label i { color: var(--tosca); }
+        .img-slot .slot-remove {
+            position: absolute; top: 4px; right: 4px;
+            background: var(--danger); color: white;
+            border: none; border-radius: 50%;
+            width: 22px; height: 22px;
+            font-size: 0.7rem; cursor: pointer;
+            display: none; align-items: center; justify-content: center;
+            z-index: 2;
+        }
+        .img-slot.has-image .slot-remove { display: flex; }
+        .img-slot .slot-uploading {
+            position: absolute; inset: 0;
+            background: rgba(255,255,255,0.85);
+            display: none; align-items: center; justify-content: center;
+            flex-direction: column; gap: 6px; font-size: 0.75rem; color: var(--tosca);
+        }
+        .img-slot.uploading .slot-uploading { display: flex; }
+        .img-slot.uploading .slot-label { display: none; }
+        .slot-badge {
+            position: absolute; bottom: 4px; left: 4px;
+            background: var(--tosca); color: white;
+            font-size: 0.6rem; padding: 2px 6px; border-radius: 6px;
+            font-weight: 700; display: none;
+        }
+        .img-slot.has-image .slot-badge { display: block; }
+        @media (max-width: 768px) {
+            .img-upload-grid { grid-template-columns: repeat(3, 1fr); }
+        }
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
@@ -391,8 +451,13 @@
                     <input type="url" id="productLink" placeholder="https://shopee.co.id/...">
                 </div>
                 <div class="form-group full-width">
-                    <label>URL Gambar</label>
-                    <input type="url" id="productImage" placeholder="Link gambar (ImgBB/Drive)">
+                    <label><i class="fas fa-images" style="color:var(--tosca)"></i> Upload Gambar (maks. 5 foto)</label>
+                    <div id="imageUploadArea">
+                        <div class="img-upload-grid" id="imgUploadGrid">
+                            <!-- Slot gambar akan di-render oleh JS -->
+                        </div>
+                        <p style="font-size:0.8rem;color:var(--gray);margin-top:8px;"><i class="fas fa-info-circle"></i> Klik slot untuk upload gambar. Gambar pertama akan jadi foto utama produk.</p>
+                    </div>
                 </div>
                 <div class="form-group full-width">
                     <label>Deskripsi</label>
@@ -436,12 +501,83 @@
 
 <script>
     // === KONFIGURASI ===
-    const ADMIN_PASSWORD = 'scoptus2026'; // Ganti passwordmu di sini
+    const ADMIN_PASSWORD = 'scoptus2026';
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKiqz17i6JMHkQaODY2tdLDQeiZEhhbxFA1a7H-xp-Gz3m8MOim4LU9LJy8kf_G-t9s8o4Q8oN0IQV/pub?gid=0&single=true&output=csv';
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSP6TVmrV7dn2fiQrg9mQeYvCwxjXeiNpYG7s05ckcxUO8st_-AB2FkiRbW3UbCCGl/exec';
+    const CLOUDINARY_CLOUD = 'dnp9uvtpf';
+    const CLOUDINARY_PRESET = 'scoptus_upload';
 
     let editingId = null;
     let allProducts = [];
+    let imageUrls = ['', '', '', '', '']; // 5 slot gambar
+
+    // === INIT IMAGE SLOTS ===
+    function initImageSlots() {
+        const grid = document.getElementById('imgUploadGrid');
+        grid.innerHTML = '';
+        for (let i = 0; i < 5; i++) {
+            const isMain = i === 0;
+            grid.innerHTML += `
+                <div class="img-slot ${imageUrls[i] ? 'has-image' : ''}" id="slot-${i}" onclick="triggerUpload(${i})">
+                    <input type="file" id="fileInput-${i}" accept="image/*" style="display:none" onchange="uploadToCloudinary(${i}, this)">
+                    ${imageUrls[i] ? `<img class="slot-preview" src="${imageUrls[i]}" alt="Gambar ${i+1}">` : ''}
+                    <div class="slot-label ${isMain ? 'main-label' : ''}">
+                        <i class="fas ${isMain ? 'fa-star' : 'fa-plus'}"></i>
+                        <span>${isMain ? 'Foto Utama' : 'Foto ' + (i+1)}</span>
+                    </div>
+                    <div class="slot-uploading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Uploading...</span>
+                    </div>
+                    <button class="slot-remove" onclick="removeImage(event, ${i})"><i class="fas fa-times"></i></button>
+                    <div class="slot-badge">${isMain ? '⭐ Utama' : '#' + (i+1)}</div>
+                </div>
+            `;
+        }
+    }
+
+    function triggerUpload(index) {
+        document.getElementById(`fileInput-${index}`).click();
+    }
+
+    async function uploadToCloudinary(index, input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const slot = document.getElementById(`slot-${index}`);
+        slot.classList.add('uploading');
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_PRESET);
+        formData.append('folder', 'scoptus/products');
+
+        try {
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (data.secure_url) {
+                imageUrls[index] = data.secure_url;
+                showToast(`✅ Gambar ${index + 1} berhasil diupload!`);
+            } else {
+                showToast('Gagal upload gambar!', 'error');
+            }
+        } catch (e) {
+            showToast('Error upload gambar!', 'error');
+        }
+
+        slot.classList.remove('uploading');
+        initImageSlots();
+        input.value = '';
+    }
+
+    function removeImage(e, index) {
+        e.stopPropagation();
+        imageUrls[index] = '';
+        initImageSlots();
+    }
 
     // === PARALLAX EFFECT ===
     window.addEventListener('scroll', () => {
@@ -459,6 +595,7 @@
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('adminWrapper').style.display = 'block';
             document.getElementById('adminPanel').style.display = 'block';
+            initImageSlots();
             loadProducts();
         } else {
             document.getElementById('errorMsg').style.display = 'block';
@@ -527,8 +664,8 @@
         const title = document.getElementById('productTitle').value.trim();
         const kategori = document.getElementById('productCategory').value;
         const link = document.getElementById('productLink').value.trim();
-        const gambar = document.getElementById('productImage').value.trim();
         const deskripsi = document.getElementById('productDesc').value.trim();
+        const gambar = imageUrls.filter(u => u).join('|');
 
         if (!title || !kategori || !link) {
             showToast('Lengkapi field yang wajib (*)!', 'error');
@@ -564,8 +701,13 @@
         document.getElementById('productTitle').value = p.title || '';
         document.getElementById('productCategory').value = p.kategori || '';
         document.getElementById('productLink').value = p.link || '';
-        document.getElementById('productImage').value = p.gambar || '';
         document.getElementById('productDesc').value = p.deskripsi || '';
+
+        // Load existing images into slots
+        const imgs = (p.gambar || '').split('|').map(u => u.trim());
+        imageUrls = ['', '', '', '', ''];
+        imgs.forEach((url, i) => { if (i < 5) imageUrls[i] = url; });
+        initImageSlots();
 
         document.getElementById('formTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Produk';
         document.getElementById('btnSubmit').innerHTML = '<i class="fas fa-save"></i> Update';
@@ -582,10 +724,11 @@
         document.getElementById('productTitle').value = '';
         document.getElementById('productCategory').value = '';
         document.getElementById('productLink').value = '';
-        document.getElementById('productImage').value = '';
         document.getElementById('productDesc').value = '';
+        imageUrls = ['', '', '', '', ''];
+        initImageSlots();
         document.getElementById('formTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Tambah Produk Baru';
-        document.getElementById('btnSubmit').innerHTML = '<i class="fas fa-save"></i> Simpan';
+        document.getElementById('btnSubmit').innerHTML = '<i class="fas fa-save"></i> Simpan Produk';
         document.getElementById('btnCancel').style.display = 'none';
     }
 
