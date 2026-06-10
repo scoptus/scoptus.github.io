@@ -67,7 +67,18 @@
             display: flex; align-items: center; gap: 10px;
             text-decoration: none;
         }
-        .navbar .logo img { height: 36px; }
+        .navbar .logo img {
+            height: 36px;
+            transition: filter 0.4s ease;
+        }
+        /* Ketika di atas hero gelap → logo jadi putih */
+        .navbar.top .logo img {
+            filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(0,200,232,0.4));
+        }
+        /* Ketika scrolled → logo normal */
+        .navbar.scrolled .logo img {
+            filter: none;
+        }
         .navbar .logo-text {
             font-family: 'Playfair Display', serif;
             font-size: 1.4rem;
